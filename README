@@ -1,0 +1,38 @@
+spyc<http://code.google.com/p/spyc/> と PEAR Net_IPv4<http://pear.php.net/package/Net_IPv4> を使ってます。
+
+以下の用に配置すると動くようになってます。
+APP/vendors/spyc/spyc.php
+           /Net/IPv4.php
+
+デフォルトでは CACHE/mobile_ip_component/range.php にキャッシュデータが保存されます。
+yamlファイルが更新されるとキャッシュが再生成されます。
+           
+使用例-1
+<?php
+class HogeController extends AppController
+{
+  var $uses = null ;
+  var $components = array('mobileip.MobileIp') ;
+  
+  function index()
+  {
+    pr($this->MobileIp->carrier()) ;
+  }
+}
+
+使用例-2 以下の様にすると多少カスタマイズできます。
+<?php
+class HogeController extends AppController
+{
+  var $uses = null ;
+  var $components = array(
+    'mobileip.MobileIp' => array(
+      'file' => 'YAMLファイルのパス', 
+      'ModelName' => 'モデル名')
+    ) ;
+  
+  function index()
+  {
+    pr($this->MobileIp->carrier()) ;
+  }
+}

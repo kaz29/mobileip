@@ -10,8 +10,9 @@ APP/vendors/spyc/spyc.php
 
 デフォルトでは CACHE/mobile_ip_component/range.php にキャッシュデータが保存されます。
 yamlファイルが更新されるとキャッシュが再生成されます。
-           
-使用例-1
+
+
+// 使用例-1
 <?php
 class HogeController extends AppController
 {
@@ -24,19 +25,77 @@ class HogeController extends AppController
   }
 }
 
-使用例-2 以下の様にすると多少カスタマイズできます。
+// 使用例-2 以下の様にすると多少カスタマイズできます。
 <?php
 class HogeController extends AppController
 {
   var $uses = null ;
   var $components = array(
     'mobileip.MobileIp' => array(
-      'file' => 'YAMLファイルのパス', 
-      'ModelName' => 'モデル名')
+        'file' => 'YAMLファイルのパス', 
+      )
     ) ;
   
   function index()
   {
     pr($this->MobileIp->carrier()) ;
+  }
+}
+
+// IPアドレスをDBで管理
+//  下記の用なモデルを書けばDBでIPアドレスを管理できますね。 下記のモデルを使うにはこんな感じで。
+//      var $components = array(
+//          'mobileip.MobileIp' => array(
+//            'ModelName' => 'Ipaddress'
+//          )
+//        ) ;
+//
+
+<?php
+App::import('Model', 'mobileip.MobileIp') ;
+class Ipaddress extends MobileIp
+{
+	var $name = 'Ipaddress';
+  var $useTable = 'ipaddresses' ;
+
+  function afterSave($created) 
+  {
+    $last_update_cache = $this->getCacheDir() . DS . 'lastupdated';
+    @touch($last_update_cache) ;
+  }
+  
+	function find($conditions = null, $fields = array(), $order = null, $recursive = null)
+  {
+    if ( $conditions != 'range' )
+      return parent::find($conditions, $fields, $order, $recursive) ;
+  
+    $cacheDir = $this->getCacheDir();
+    $folder = new Folder($cacheDir);
+    $folder->create($cacheDir, 0777);
+
+   $last_update_cache = $this->getCacheDir() . DS . 'lastupdated';
+
+    $cacheFile = $this->getCacheFile();
+    if (file_exists($cacheFile) &&
+        ($this->_getLastModified($last_update_cache) <= filemtime($cacheFile))) {
+      return include($cacheFile);
+    }
+
+    $ipaddresses = $this->find('all') ;
+    if ( !is_array($ipaddresses) ) 
+      return false ;
+
+    $mobile_ips = array() ;
+    foreach( $ipaddresses as $ip ) {      
+      $mobile_ips[$ip['Ipaddress']['type']][] = long2ip($ip['Ipaddress']['ip']) . "/{$ip['Ipaddress']['mask']}" ;
+    }
+
+    $data = $this->_get_ranges($mobile_ips) ;
+   
+    $file = new File($cacheFile, true);
+    $file->write($data);
+    $file->close();
+
+    return include($cacheFile);
   }
 }

@@ -43,7 +43,7 @@ class HogeController extends AppController
 }
 
 // IPアドレスをDBで管理
-//  下記の用なモデルを書けばDBでIPアドレスを管理できますね。 下記のモデルを使うにはこんな感じで。
+//  下記の様なモデルを書けばDBでIPアドレスを管理できますね。 下記のモデルを使うにはこんな感じで。
 //      var $components = array(
 //          'mobileip.MobileIp' => array(
 //            'ModelName' => 'Ipaddress'

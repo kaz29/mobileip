@@ -7,8 +7,8 @@ class MobileIp extends Model
   
 	function find($conditions = null, $fields = array(), $order = null, $recursive = null)
   {
-    if ( $conditions != 'all' )
-      return false ;
+    if ( $conditions != 'range' )
+      return parent::find($conditions, $fields, $order, $recursive) ;
   
     $file = Set::extract($fields, 'file') ;
     if (empty($file)) {

@@ -22,7 +22,7 @@ class MobileIpComponent extends Object
 		if ( !is_a($MobileIp, $modelname) )
 		  return ;
 		
-    $this->ranges = $MobileIp->find('all', $this->settings) ;
+    $this->ranges = $MobileIp->find('range', $this->settings) ;
   }
   
   function carrier($addr = null)

@@ -4,7 +4,7 @@ btoさんの作ったsfMobileIPPluginをCakePHPに移植してみました。
 
 spyc<http://code.google.com/p/spyc/> と PEAR Net_IPv4<http://pear.php.net/package/Net_IPv4> を使ってます。
 
-以下の用に配置すると動くようになってます。
+以下の様に配置すると動くようになってます。
 APP/vendors/spyc/spyc.php
            /Net/IPv4.php
 
